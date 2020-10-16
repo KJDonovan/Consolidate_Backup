@@ -39,14 +39,15 @@ for cpath in celist:
 #    [parentdir, filename]=os.path.split(c)
 #    print(filename)
 #    print(parentdir)
-    split_path=reverse(c.split(os.sep))
-#    print(split_path)
+    split_path=c.split(os.sep)
+    split_path.reverse()
 #    print(split_path[-1])
 #    print(split_path[-2])
     for blist in backup_list:
         for file in blist:
             replacements=[]
-            fpath=reverse(file.split(os.sep))
+            fpath=file.split(os.sep)
+            fpath.reverse()
             dir_levels=min(len(split_path), len(fpath))
             for i in range(dir_levels,1):
                 if (split_path[0:i] == fpath[0:i]):
@@ -63,6 +64,6 @@ for cpath in celist:
             replacements=sorted(replacements)
             for replace in replacements:
                 rfile.write(replace[1]+'\n')
-    rfile.write('##### End possible replacements: #####\n')
+    rfile.write('##### End possible replacements: #####\n\n')
 
 rfile.close()
