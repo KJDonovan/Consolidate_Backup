@@ -31,7 +31,7 @@ replacements_file='replacement_images.txt'
 rfile=open(results_dir+'/'+replacements_file,"a")
 
 for cpath in celist:
-    rfile.write('***** Corrupt or empty file: *****\n'+filename+'\n')
+    rfile.write('***** Corrupt or empty file: *****\n'+cpath+'\n')
     rfile.write('##### Possible replacements: #####\n')
     c=cpath.rstrip()
     print('Next path:')
