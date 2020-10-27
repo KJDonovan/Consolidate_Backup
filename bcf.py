@@ -1,4 +1,5 @@
-import os, hashlib, filecmp
+import os, hashlib, filecmp, PyPDF2
+from PIL import Image
 
 BLOCKSIZE = 65536
 
