@@ -4,8 +4,8 @@ from PIL import Image
 #scan_dir='/Users/kevindonovan/Dropbox (MIT)/Pictures KJD'
 #scan_dir='/Volumes/SUBPAR/Pictures KJD'
 #scan_dir='/Users/kevindonovan/Dropbox (MIT)/Pictures KJD/Already on SUBPAR/2011to2019 Pictures KJD/2011 Pictures KJD/Oct2011/2011-10-08/'
-scan_dir='/Users/kevindonovan/Desktop/Back_Consolidation/test_data_backup_consolidation/dir2delete_test_data_backup_consolidation'
-#scan_dir='/Volumes/photo/Pictures KJD'
+#scan_dir='/Users/kevindonovan/Desktop/Back_Consolidation/test_data_backup_consolidation/dir2delete_test_data_backup_consolidation'
+scan_dir='/Volumes/photo/Pictures KJD'
  
 def make_file_array(dir_path):
   file_array = []
