@@ -24,6 +24,9 @@ import os, bcf
 #                os.makedirs(new_path)
 #    return new_path
 
-testfile='/Users/kevindonovan/Desktop/Back_Consolidation/test_data_backup_consolidation/dir2delete_test_data_backup_consolidation_testcopy1/photos_test_backup_consolidation/Bandit sunbath.JPG'
+testfile='/Users/kevindonovan/Desktop/Back_Consolidation/test_data_backup_consolidation/dir2delete_test_data_backup_consolidation_testcopy1/music_test_backup_consolidation/Dave Brubeck - Unsquare Dance.mp3'
 basedir_test='Users/kevindonovan/Desktop/Back_Consolidation/test_data_backup_consolidation/'
-move_to_delete(testfile,basedir_test)
+bcf.move_to_delete(testfile,basedir_test)
+
+#mdir=
+#dir2delete=
