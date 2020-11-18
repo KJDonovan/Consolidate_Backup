@@ -99,11 +99,7 @@ def move_to_delete(file_path, basedir):
     bd=basedir.split(os.sep)
     bdir=[i for i in bd if i]
     diff_path=['ok_to_delete']+[i for i in split_path if i not in bdir]
-    print(split_path)
-    print(bdir)
-    print(diff_path)
     new_path=(''.join([('/'+str(elem)) for elem in bdir]))
-    print(new_path)
     for folder in diff_path:
         new_path=new_path+'/'+folder
         if (folder==split_path[-1]) and os.path.exists(new_path):
