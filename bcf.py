@@ -1,4 +1,4 @@
-import os, hashlib, filecmp, PyPDF2
+import os, hashlib, filecmp, PyPDF2, time
 from PIL import Image
 
 BLOCKSIZE = 65536
@@ -36,11 +36,31 @@ def make_file_array(dir_path):
 #print(make_file_array(dir_main))
 #quit()
 
+#makes list of files with extensions given in the list ext
+def make_file_array_type(dir_path,ext):
+    file_array = []
+    for path, subdirs, files in os.walk(dir_path):
+        for i in files:
+            filename, file_extension = os.path.splitext(i)
+            if (file_extension in ext):
+                file_to_check=os.path.join(path,i)
+                file_array.append(file_to_check)
+    return file_array
+
 def make_hash_array(files_array):
   hash_array=[]
   for ff in files_array:
     hash_array.append(hash_this(ff)[0])
   return hash_array
+
+#make hash array for files with extensions given in the list ext
+def make_hash_array_type(files_array,ext):
+    hash_array=[]
+    for ff in files_array:
+        filename, file_extension = os.path.splitext(ff)
+        if (file_extension in ext):
+            hash_array.append(hash_this(ff)[0])
+    return hash_array
 
 def write_line_to_file(filename, line):
   results_file=open(filename,"a")
@@ -111,3 +131,25 @@ def move_to_delete(file_path, basedir):
             if not os.path.exists(new_path):
                 os.makedirs(new_path)
     return new_path
+
+#searches for a dup of file_path in file_list with filecmp
+def dup_exists_fcmp(file_path, file_list):
+    match_found=0
+    for f1m in file_list:
+#    print("Comparing "+f2d+" and "+f1m+'\n')
+        if (filecmp.cmp(file_path,f1m)==1):
+            match_found=1
+            break
+    return match_found
+
+def dup_exists_hash(file_path, hash_array):
+    f2d_hash = hash_this(file_path)
+#    print(f2d_hash[0])
+#    print(hash_array[0])
+    if (f2d_hash[0] in hash_array):
+        return 1
+    else:
+        return 0
+    
+
+        
