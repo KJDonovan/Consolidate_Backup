@@ -1,7 +1,29 @@
-import os, hashlib, filecmp, PyPDF2, time
+import os, hashlib, filecmp, PyPDF2, time, ntpath
 from PIL import Image
+from compare_mp3 import compare
 
 BLOCKSIZE = 65536
+
+#Find the filename from a path
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
+
+#Split a path into a vector
+def splitall(path):
+    allparts = []
+    while 1:
+        parts = os.path.split(path)
+        if parts[0] == path:  # sentinel for absolute paths
+            allparts.insert(0, parts[0])
+            break
+        elif parts[1] == path: # sentinel for relative paths
+            allparts.insert(0, parts[1])
+            break
+        else:
+            path = parts[0]
+            allparts.insert(0, parts[1])
+    return allparts
 
 def hash_this(filename):
   hasher = hashlib.md5()
@@ -37,14 +59,36 @@ def make_file_array(dir_path):
 #quit()
 
 #makes list of files with extensions given in the list ext
+#excludes corrupt or empty files
 def make_file_array_type(dir_path,ext):
     file_array = []
+    exten=[i.lower() for i in ext]
     for path, subdirs, files in os.walk(dir_path):
-        for i in files:
-            filename, file_extension = os.path.splitext(i)
-            if (file_extension in ext):
-                file_to_check=os.path.join(path,i)
-                file_array.append(file_to_check)
+        for fi in files:
+            f2c=os.path.join(path,fi)
+            filename, file_extension = os.path.splitext(f2c)
+            if (file_extension.lower() in exten):
+                if os.path.getsize(f2c) == 0:
+                    print('Found empty file while making file list: '+f2c)
+                    continue
+                elif (file_extension.lower() in ['.jpg','.jpeg','.png','.gif','.bmp','.tif','.tiff','.nef','.dng']) and jpg_png_pdf_corrupt(f2c):
+                    print('Found corrupt file while making file list: '+f2c)
+                    continue
+                else:
+                    file_array.append(f2c)
+    return file_array
+
+#makes list of files with extensions given in the list ext
+#includes corrupt or empty files
+def make_file_array_type_include_corrupt(dir_path,ext):
+    file_array = []
+    exten=[i.lower() for i in ext]
+    for path, subdirs, files in os.walk(dir_path):
+        for fi in files:
+            f2c=os.path.join(path,fi)
+            filename, file_extension = os.path.splitext(f2c)
+            if (file_extension.lower() in exten):
+                file_array.append(f2c)
     return file_array
 
 def make_hash_array(files_array):
@@ -56,10 +100,18 @@ def make_hash_array(files_array):
 #make hash array for files with extensions given in the list ext
 def make_hash_array_type(files_array,ext):
     hash_array=[]
+    exten=[i.lower() for i in ext]
     for ff in files_array:
         filename, file_extension = os.path.splitext(ff)
-        if (file_extension in ext):
-            hash_array.append(hash_this(ff)[0])
+        if (file_extension.lower() in exten):
+            if os.path.getsize(ff) == 0:
+                print('Found empty file while making hash array: '+ff)
+                continue
+            elif (file_extension.lower() in ['.jpg','.jpeg','.png','.gif','.bmp','.tif','.tiff','.nef','.dng']) and jpg_png_pdf_corrupt(ff):
+                print('Found corrupt file while making hash array: '+ff)
+                continue
+            else:
+                hash_array.append(hash_this(ff)[0])
     return hash_array
 
 def write_line_to_file(filename, line):
@@ -96,15 +148,18 @@ def pdf_empty_or_corrupt(filename):
         return 1
 
 #Returns 0 if jpg/png/pdf is valid, 1 if corrupt
-def jpg_png_empty_or_corrupt(filename):
-    if (filename.endswith('.png') or filename.endswith('.jpg') or filename.endswith('.JPG') or filename.endswith('.PNG')):
+def jpg_png_pdf_corrupt(filename):
+    fname, file_extension = os.path.splitext(filename)
+    if (file_extension.lower() in ['.jpg','.jpeg','.png','.gif','.bmp','.tif','.tiff','.nef','.dng']):
         try:
             img = Image.open(filename)
             img.verify() # verify that it is, in fact an image
+#            print('Image file appears to be ok')
             return 0
         except (IOError, SyntaxError) as e:
+#            print('Image file appears to be corrupt')
             return 1
-    elif (filename.endswith('.PDF') or filename.endswith('.pdf')):
+    elif (file_extension.lower() == '.pdf'):
         try:
             img = open(filename,"rb")
             PyPDF2.PdfFileReader(img)
@@ -150,6 +205,18 @@ def dup_exists_hash(file_path, hash_array):
         return 1
     else:
         return 0
-    
+
+def dup_exists_bitstream(file_path, file_list, f2s):
+    match_found=0
+    matching_file=''
+    for f1m in file_list:
+#    print("Comparing "+f2d+" and "+f1m+'\n')
+        if (f1m in f2s) or (os.path.getsize(f1m) == 0):
+            continue
+        elif (compare(file_path,f1m).value):
+            match_found=1
+            matching_file=f1m
+            break
+    return [match_found, matching_file]
 
         
